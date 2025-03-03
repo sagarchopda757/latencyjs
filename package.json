@@ -1,6 +1,6 @@
 {
   "name": "latencyjs",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Middleware to track API request latency and log slow requests",
   "main": "index.js",
   "scripts": {
