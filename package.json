@@ -1,0 +1,24 @@
+{
+  "name": "latencyjs",
+  "version": "1.0.0",
+  "description": "Middleware to track API request latency and log slow requests",
+  "main": "index.js",
+  "scripts": {
+    "test": "node test.js"
+  },
+  "keywords": [
+    "api",
+    "latency",
+    "monitor",
+    "express",
+    "slow",
+    "requests",
+    "performance"
+  ],
+  "author": "sagar_chopda",
+  "license": "ISC",
+  "dependencies": {
+    "colors": "^1.4.0",
+    "winston": "^3.17.0"
+  }
+}
