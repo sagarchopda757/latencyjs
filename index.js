@@ -36,4 +36,3 @@ function latency(threshold = 100) {
   }
   
   module.exports = latency;
-  
