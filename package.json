@@ -1,10 +1,9 @@
 {
   "name": "latencyjs",
-  "version": "1.0.1",
-  "description": "Middleware to track API request latency and log slow requests",
+  "version": "1.0.3",
+  "description": "A middleware for monitoring request latency",
   "main": "index.js",
   "scripts": {
-    "test": "node test.js"
   },
   "keywords": [
     "api",
@@ -18,7 +17,19 @@
   "author": "sagar_chopda",
   "license": "ISC",
   "dependencies": {
-    "colors": "^1.4.0",
-    "winston": "^3.17.0"
+    "winston": "^3.8.2",
+    "colors": "^1.4.0"
+  },
+  "devDependencies": {
+    "jest": "^29.7.0"
+  },
+  "jest": {
+    "verbose": true,
+    "testEnvironment": "node",
+    "coverageDirectory": "./coverage",
+    "collectCoverage": true,
+    "collectCoverageFrom": [
+      "index.js"
+    ]
   }
 }

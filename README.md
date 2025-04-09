@@ -1,77 +1,153 @@
-# 🚀 LatencyJS - Track API Performance & Identify Slow Requests  
+# LatencyJS
 
 [![npm version](https://img.shields.io/npm/v/latencyjs.svg)](https://www.npmjs.com/package/latencyjs)  
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)  
 [![Downloads](https://img.shields.io/npm/dt/latencyjs.svg)](https://www.npmjs.com/package/latencyjs)  
 
-## ⚡ Introduction  
-`latencyjs` is a lightweight **middleware for Express.js** that tracks API response times and logs **slow requests** using [Winston](https://github.com/winstonjs/winston). It helps in identifying performance bottlenecks in your application.  
+A lightweight Express.js middleware for monitoring API request latency and logging slow requests.
 
-## 🎯 Features  
-✅ **Track API Response Times**  
-✅ **Customizable Threshold (in milliseconds)**  
-✅ **Logs Slow Requests with Warning Highlight**  
-✅ **Lightweight & Easy to Use**  
-✅ **Works Seamlessly with Express.js**  
+## What is LatencyJS?
 
-## 📦 Installation  
+LatencyJS is a performance monitoring middleware for Express.js applications that helps you identify and track slow API requests. It works by:
+
+1. **Measuring Response Times**: Automatically tracks how long each API endpoint takes to respond
+2. **Configurable Thresholds**: Allows you to set different time thresholds for different HTTP methods
+3. **Smart Logging**: Logs requests that exceed the configured thresholds with detailed information
+4. **Flexible Configuration**: Supports various logging options including file-based and console output
+5. **Visual Feedback**: Uses colored logs to distinguish between different severity levels
+
+This middleware is particularly useful for:
+- Identifying performance bottlenecks in your API
+- Monitoring response times in production
+- Setting up alerts for slow requests
+- Debugging performance issues
+- Maintaining API quality standards
+
+## Features
+
+- 🔍 **Track API Response Times**: Monitor how long your API endpoints take to respond
+- ⚙️ **Customizable Thresholds**: Set different thresholds for different HTTP methods
+- 📝 **Flexible Logging**: Configure log levels, file paths, and console output
+- 🎨 **Colored Logs**: Visual distinction between different log levels
+- 🔌 **Easy Integration**: Simple setup with Express.js applications
+
+## Installation
 
 ```bash
 npm install latencyjs
 ```
 
-🚀 Usage
-Basic Setup
-Add latencyjs middleware to your Express app:
+## Basic Usage
 
-```javascript  
-
-const express = require("express");
-const latency = require("latencyjs");
+```javascript
+const express = require('express');
+const latency = require('latencyjs');
 
 const app = express();
-const PORT = 3000;
 
-// Use latencyjs middleware with a threshold of 200ms
-app.use(latency(500));
+// Basic usage with default settings (100ms threshold)
+app.use(latency());
 
-app.get("/", (req, res) => {
-  setTimeout(() => res.send("Hello, World!"), 550); // Simulating a slow response
+// OR set a global threshold for all methods
+app.use(latency({
+  threshold: 50  // This will set 50ms as threshold for all HTTP methods
+}));
+
+// Your routes here
+app.get('/api/data', (req, res) => {
+  res.json({ data: 'some data' });
 });
 
-app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));
-
+app.listen(3000, () => console.log('Server running on port 3000'));
 ```
 
-Custom Threshold
-You can customize the threshold (default: 100ms):
+> **Note**: To set a global threshold for all HTTP methods, always use the object configuration syntax with the `threshold` property. The middleware will use this value as the default threshold for any method not specified in `customThresholds`.
 
-```javascript  
-app.use(latency(500)); // Logs requests taking longer than 500ms
+## Configuration Options
+
+### Default Configuration
+
+```javascript
+app.use(latency({
+  threshold: 100, // Default threshold in milliseconds (used for methods not specified in customThresholds)
+  logging: {
+    enabled: true,
+    level: 'warn',
+    logFile: 'slow-requests.log',
+    consoleEnabled: true
+  },
+  customThresholds: {
+    GET: 100,
+    POST: 200,
+    PUT: 150,
+    DELETE: 100,
+    PATCH: 150
+  }
+}));
 ```
-📝 Example Log Output
 
-```bash
- Slow Request found => GET:/ took: 550.08 milliseconds
+### Method-Specific Thresholds
+
+```javascript
+app.use(latency({
+  customThresholds: {
+    GET: 50,    // GET requests slower than 50ms will be logged
+    POST: 200,  // POST requests slower than 200ms will be logged
+    PUT: 150    // PUT requests slower than 150ms will be logged
+  }
+}));
 ```
 
-🔥 Why Use LatencyJS?
-Performance Monitoring: Quickly identify slow endpoints
-Customizable Logging: Easily adjust the threshold
-Zero Configuration Required: Just plug and play
-🌟 Contributing
-We welcome contributions! Feel free to submit issues or PRs.
+### Logging Configuration
 
-### Buy Me a Coffee
-Your support means a lot! If you'd like to show your appreciation, you can [buy me a coffee ☕][buymeacoffee.com/sagarchopda] by visiting the link below
+```javascript
+app.use(latency({
+  logging: {
+    enabled: true,        // Enable/disable logging
+    consoleEnabled: false, // Disable console output
+    level: 'info',        // Log level (info, warn, error)
+    logFile: 'custom-slow-requests.log' // Custom log file path
+  }
+}));
+```
 
-[![Buy Me A Coffee][coffee-image]][coffee-url]
+### Disable Logging
 
+```javascript
+app.use(latency({
+  logging: {
+    enabled: false // Disable all logging
+  }
+}));
+```
 
-Every contribution helps keep the project alive and encourages further improvements.
+## Log Output
 
-[coffee-image]: https://www.buymeacoffee.com/assets/img/custom_images/orange_img.png
-[coffee-url]: https://buymeacoffee.com/sagarchopda
+The middleware logs slow requests with the following information:
+- Timestamp
+- Log level (colored based on level)
+- HTTP method
+- Request URL
+- Response time in milliseconds
+- Threshold that was exceeded
 
-📜 License
-This project is MIT Licensed.
+Example log output:
+```
+[2023-04-08T12:34:56.789Z] [WARN] Slow Request found => GET:/api/data took: 150.25 milliseconds (threshold: 100ms)
+```
+
+## Log Levels
+
+- **info**: Green colored logs for informational messages
+- **warn**: Yellow colored logs for warning messages
+- **error**: Red colored logs for error messages
+
+## Support
+
+If you find this package helpful, consider buying me a coffee! Your support helps me maintain and improve this project.
+
+[![Buy Me A Coffee](https://www.buymeacoffee.com/assets/img/custom_images/orange_img.png)](https://www.buymeacoffee.com/sagarchopda)
+
+## License
+
+MIT
