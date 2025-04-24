@@ -14,13 +14,7 @@ function createLogger(options = {}) {
         enabled = true,
         level = 'warn',
         logFile = 'slow-requests.log',
-        format = winston.format.combine(
-            winston.format.timestamp(),
-            winston.format.printf(({ timestamp, level, message }) => {
-                const coloredMessage = colors[level](message);
-                return `[${timestamp}] [${level.toUpperCase()}] ${coloredMessage}`;
-            })
-        ),
+        format = null,
         consoleEnabled = true  
     } = options;
 
@@ -32,31 +26,50 @@ function createLogger(options = {}) {
         };
     }
 
-    const transports = [
-        new winston.transports.File({ 
-            filename: logFile,
-            format: winston.format.combine(
-                winston.format.timestamp(),
-                winston.format.printf(({ timestamp, level, message }) => {
-                    return `[${timestamp}] [${level.toUpperCase()}] ${message}`;
-                })
-            )
+    const transports = [];
+
+    // Create a consistent format for both console and file
+    const defaultFormat = winston.format.combine(
+        winston.format.timestamp(),
+        winston.format.printf(({ timestamp, level, message }) => {
+            return `[${timestamp}] [${level.toUpperCase()}] ${message}`;
         })
-    ];
+    );
+
+    // Only add file transport if logFile is provided
+    if (logFile) {
+        transports.push(new winston.transports.File({ 
+            filename: logFile,
+            format: format || defaultFormat
+        }));
+    }
 
     // Only add console transport if consoleEnabled is true
     if (consoleEnabled) {
-        transports.push(new winston.transports.Console());
+        transports.push(new winston.transports.Console({
+            format: format || winston.format.combine(
+                winston.format.timestamp(),
+                winston.format.printf(({ timestamp, level, message }) => {
+                    const coloredMessage = colors[level](message);
+                    return `[${timestamp}] [${level.toUpperCase()}] ${coloredMessage}`;
+                })
+            )
+        }));
     }
 
     return winston.createLogger({
         level: level,
-        format: format,
+        format: defaultFormat,
         transports: transports
     });
 }
 
 function latency(options = {}) {
+    // Ensure options is an object
+    if (typeof options === 'number') {
+        options = { threshold: options };
+    }
+
     const {
         threshold = 100,
         logging = {
@@ -68,7 +81,7 @@ function latency(options = {}) {
         customThresholds = null
     } = options;
 
-    const logger = createLogger(logging);
+    let logger = null;
 
     return async function (req, res, next) {
         const start = process.hrtime();
@@ -81,6 +94,11 @@ function latency(options = {}) {
             const methodThreshold = customThresholds ? (customThresholds[req.method] || threshold) : threshold;
 
             if (milliseconds > methodThreshold) {
+                // Create logger only when needed
+                if (!logger) {
+                    logger = createLogger(logging);
+                }
+
                 const logMessage = `Slow Request found => ${req.method}:${req.originalUrl} took: ${milliseconds.toFixed(2)} milliseconds (threshold: ${methodThreshold}ms)`;
                 
                 switch (logging.level) {

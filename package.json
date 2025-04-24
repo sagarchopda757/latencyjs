@@ -1,26 +1,29 @@
 {
   "name": "latencyjs",
   "version": "1.0.4",
-  "description": "A middleware for monitoring request latency",
-  "main": "index.js",
-  "scripts": {},
+  "description": "A middleware to monitor and log slow requests in Express applications",
+  "main": "main.js",
+  "scripts": {
+    "test": "jest"
+  },
   "keywords": [
-    "api",
-    "latency",
-    "monitor",
     "express",
-    "slow",
-    "requests",
-    "performance"
+    "middleware",
+    "latency",
+    "performance",
+    "monitoring"
   ],
-  "author": "sagar_chopda",
-  "license": "ISC",
+  "author": "Sagar",
+  "license": "MIT",
   "dependencies": {
-    "winston": "^3.8.2",
-    "colors": "^1.4.0"
+    "colors": "^1.4.0",
+    "winston": "^3.11.0"
   },
   "devDependencies": {
-    "jest": "^29.7.0"
+    "express": "^4.21.2",
+    "javascript-obfuscator": "^4.1.1",
+    "jest": "^29.7.0",
+    "supertest": "^6.3.4"
   },
   "jest": {
     "verbose": true,
