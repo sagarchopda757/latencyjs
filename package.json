@@ -1,6 +1,6 @@
 {
   "name": "latencyjs",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "description": "A middleware to monitor and log slow requests in Express applications",
   "main": "main.js",
   "scripts": {
